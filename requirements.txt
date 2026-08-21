@@ -1,0 +1,13 @@
+pandas>=2.0
+numpy>=1.26
+pyarrow
+tqdm
+datasets
+transformers
+torch
+scikit-learn
+catboost
+matplotlib
+seaborn
+PyYAML
+yfinance
