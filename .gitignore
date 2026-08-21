@@ -1,0 +1,10 @@
+# окружение
+venv/
+__pycache__/
+*.pyc
+
+# jupyter
+.ipynb_checkpoints/
+
+# данные живут только на сервере, никогда не в git
+data/
