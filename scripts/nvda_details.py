@@ -10,7 +10,7 @@ with open(DATA_PATH, 'rb') as f:
 total_chunks = row_count // 500_000 + 1
 
 def find_only_nvda(DATA_PATH)->pd.DataFrame:
-    chunks=pd.read_csv(DATA_PATH,chunksize=5000000)
+    chunks=pd.read_csv(DATA_PATH,chunksize=5000000,usecols=['Stock_symbol','Date'])
     nvda_news_list=[]
     for chunk in tqdm(chunks, desc="Filtering NVDA",total=total_chunks):
         nvda_chunk=chunk[chunk['Stock_symbol']=='NVDA']
