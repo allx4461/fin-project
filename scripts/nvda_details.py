@@ -5,7 +5,7 @@ from tqdm import tqdm
 PROJECT_ROOT = Path(__file__).parent.parent
 DATA_PATH = PROJECT_ROOT / "data" / "raw" / "nasdaq_exteral_data.csv"
 
-chunks=pd.read_csv(DATA_PATH,chunksize=5000000)
+chunks=pd.read_csv(DATA_PATH,chunksize=500_000)
 
 def find_only_nvda(chunks)->pd.DataFrame:
     nvda_news_list=[]
