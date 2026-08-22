@@ -9,7 +9,7 @@ chunks=pd.read_csv(DATA_PATH,chunksize=500)
 def find_only_nvda(chunks)->pd.DataFrame:
     nvda_news_list=[]
     for chunk in chunks:
-        nvda_chunk=chunk[chunk['Stock symbol']=='NVDA']
+        nvda_chunk=chunk[chunk['Stock_symbol']=='NVDA']
         nvda_news_list.append(nvda_chunk)
     nvda_news=pd.concat(nvda_news_list)
     return nvda_news
