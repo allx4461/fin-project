@@ -6,22 +6,27 @@ import pandas_market_calendars as mcal
 import numpy as np
 PROJECT_ROOT = Path(__file__).parent.parent
 DATA_PATH = PROJECT_ROOT / "data" / "raw" / "nasdaq_exteral_data.csv"
-chunksize = 100_000
+OUTPUT_PATH = PROJECT_ROOT / "data" / "processed" / "nvda_news.csv"
+chunksize = 50_000
 with open(DATA_PATH, 'rb') as f:
     row_count = sum(1 for _ in f) - 1
 total_chunks = row_count // chunksize + 1
 
 
-def find_only_nvda(DATA_PATH) -> pd.DataFrame:
-    chunks = pd.read_csv(DATA_PATH, chunksize=100_000,
-                         usecols=['Stock_symbol', 'Date','Article_title'])
-    nvda_news_list = []
-    for chunk in tqdm(chunks, desc="Filtering NVDA", total=total_chunks):
-        nvda_chunk = chunk[chunk['Stock_symbol'] == 'NVDA']
-        nvda_news_list.append(nvda_chunk)
-    nvda_news = pd.concat(nvda_news_list)
-    return nvda_news
+def find_only_nvda_streaming(data_path, output_path, chunksize=CHUNK_SIZE):
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    first_chunk = True
 
+    chunks = pd.read_csv(data_path, chunksize=chunksize, usecols=['Stock_symbol', 'Date'])
+    for chunk in tqdm(chunks, desc="Filtering NVDA"):
+        nvda_chunk = chunk[chunk['Stock_symbol'] == 'NVDA']
+        if not nvda_chunk.empty:
+            nvda_chunk.to_csv(output_path, mode='a', header=first_chunk, index=False)
+            first_chunk = False
+        del chunk, nvda_chunk 
+
+find_only_nvda_streaming(DATA_PATH, OUTPUT_PATH)
+nvda_news = pd.read_csv(OUTPUT_PATH)
 
 def get_nasdaq_trading_days(start, end) -> pd.DatetimeIndex:
     nasdaq = mcal.get_calendar('NASDAQ')
@@ -53,6 +58,5 @@ def clean_nvda_news(news: pd.DataFrame) -> pd.DataFrame:
     return news
 
 if __name__ == "__main__":
-    nvda_news = find_only_nvda(DATA_PATH)
     nvda_news = clean_nvda_news(nvda_news)
     print(nvda_news[['Date', 'trading_day']].head())
