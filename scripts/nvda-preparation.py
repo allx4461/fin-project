@@ -13,7 +13,7 @@ with open(DATA_PATH, 'rb') as f:
 total_chunks = row_count // chunksize + 1
 
 
-def find_only_nvda_streaming(data_path, output_path, chunksize=CHUNK_SIZE):
+def find_only_nvda_streaming(data_path, output_path, chunksize=chunksize):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     first_chunk = True
 
