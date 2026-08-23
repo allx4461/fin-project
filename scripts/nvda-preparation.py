@@ -17,7 +17,7 @@ def find_only_nvda_streaming(data_path, output_path, chunksize=CHUNK_SIZE):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     first_chunk = True
 
-    chunks = pd.read_csv(data_path, chunksize=chunksize, usecols=['Stock_symbol', 'Date'])
+    chunks = pd.read_csv(data_path, chunksize=chunksize, usecols=['Stock_symbol', 'Date','Article_title'])
     for chunk in tqdm(chunks, desc="Filtering NVDA"):
         nvda_chunk = chunk[chunk['Stock_symbol'] == 'NVDA']
         if not nvda_chunk.empty:
