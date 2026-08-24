@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 
 PRICE_FEATURES = ['return_1d', 'return_5d', 'return_20d',
-                  'price_to_sma_20', 'volatility_5d', 'volume_ratio_10d', 'hl_spread']
+                  'price_to_sma_20', 'volatility_5d', 'volume_ratio_10d', 'hl_spread','has_news']
 VADER_FEATURES = ['vader_score', 'vader_pos', 'vader_neg', 'vader_score_3d']
 ROBERTA_FEATURES = ['roberta_score', 'roberta_pos',
                     'roberta_neg', 'roberta_score_3d']
@@ -52,6 +52,7 @@ def media_attention(df: pd.DataFrame):
     # количество новостей относительно среднего за последнее окно
     df['news_count_ratio_7d'] = df['news_count'] / \
         df['news_count'].rolling(window=7).mean()
+    df['news_count_ratio_7d']=df['news_count_ratio_7d'].fillna(0)
 
 
 def cal_anomalies(df: pd.DataFrame):
@@ -67,9 +68,10 @@ def hl_spread(df: pd.DataFrame):
 
 
 def finbert_x_volume(df: pd.DataFrame):
-    df['finbert_x_volume'] = df['Volume']*df['volume_ratio_10d']
+    df['finbert_x_volume'] = df['finbert_score']*df['volume_ratio_10d']
 
-
+def flag_has_news(df:pd.DataFrame):
+    df['has_news']=(df['news_count'] > 0).astype(int)# не знала как это пишется прикольно
 def create_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df = df.sort_values('Date').reset_index(drop=True)
@@ -83,6 +85,7 @@ def create_features(df: pd.DataFrame) -> pd.DataFrame:
     cal_anomalies(df)
     hl_spread(df)
     finbert_x_volume(df)
+    flag_has_news(df)
     df = df.dropna().reset_index(drop=True)
     return df
 

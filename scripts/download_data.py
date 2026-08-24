@@ -43,7 +43,11 @@ def load_merge_all_sentiments() -> pd.DataFrame:
 
 def merge_sentiment_yfinance(prices: pd.DataFrame, all_sentiment: pd.DataFrame) -> pd.DataFrame:
     final_df = prices.merge(all_sentiment, left_on='Date',
-                            right_on='trading_day', how='inner')
+                            right_on='trading_day', how='left')
+    final_df['news_count']=final_df['news_count'].fillna(0)
+    for mod in ['finbert','roberta','vader']:
+        for dif in ['score','pos','neg','neu']:
+            final_df[f'{mod}_{dif}']=final_df[f'{mod}_{dif}'].fillna(0.0)
     final_df = final_df.dropna().reset_index(drop=True)#когда выкидываются наны сбивается индекс, поэтому ресетим
     return final_df
 
