@@ -32,8 +32,19 @@ def run_sentiment(data_path,output_path,model: Literal['finbert','roberta','vade
         prob_neu=('prob_neu', 'mean')
     ).reset_index()  # trading day != idx
     daily_sentiment.to_csv(output_path / f"nvda_{model}_daily.csv", index=False)
-
+def check_sentiment(path):
+    print("finbert's result: \n")
+    pd.read_csv(path/"nvda_finbert_daily.csv").head(n=10)
+    print('\n\n\n')
+    print("roberta's result: \n")
+    pd.read_csv(path/"nvda_roberta_daily.csv").head(n=10)
+    print('\n\n\n')
+    print("vader's result: \n")
+    pd.read_csv(path/"nvda_vader_daily.csv").head(n=10)
+    print('\n\n\n')
+    
 if __name__=='__main__':
     run_sentiment(DATA_PROCESSED_PATH,OUTPUT_DIR,'finbert')
     run_sentiment(DATA_PROCESSED_PATH,OUTPUT_DIR,'roberta')
     run_sentiment(DATA_PROCESSED_PATH,OUTPUT_DIR,'vader')
+    check_sentiment(OUTPUT_DIR)
