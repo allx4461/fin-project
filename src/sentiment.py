@@ -81,9 +81,9 @@ def predict_vader(texts: list[str]) -> pd.DataFrame:
 # endregion
 
 
-def predict_finbert(texts: list[str], batch_size: int = 64):
-    return predict_finbert_or_roberta(texts, tokenizer=tokenizer_finbert, model=model_finbert, batch_size)
+def predict_finbert(texts: list[str], batchsize: int = 64):
+    return predict_finbert_or_roberta(texts, tokenizer=tokenizer_finbert, model=model_finbert, batch_size=batchsize)
 
 
-def predict_roberta(texts: list[str], batch_size: int = 64):
-    return predict_finbert_or_roberta(texts, tokenizer=tokenizer_roberta, model=model_roberta, batch_size)
+def predict_roberta(texts: list[str], batchsize: int = 64):
+    return predict_finbert_or_roberta(texts, tokenizer=tokenizer_roberta, model=model_roberta, batch_size=batchsize)
