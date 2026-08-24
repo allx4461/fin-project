@@ -12,3 +12,4 @@ seaborn
 PyYAML
 yfinance
 pandas_market_calendars
+nltk
