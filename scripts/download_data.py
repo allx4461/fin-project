@@ -52,7 +52,6 @@ def main(output_path) -> pd.DataFrame:
     prices = load_yfinance()
     all_sentiments = load_merge_all_sentiments()
     final = merge_sentiment_yfinance(prices, all_sentiments)
-    print(final.head())
     final.to_csv(output_path,index=False)#не нужна лишняя колонка с индексами
 
 
