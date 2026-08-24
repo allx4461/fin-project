@@ -7,8 +7,8 @@ def load_yfinance() -> pd.DataFrame:
     prices = yf.download("NVDA", start="2015-01-01",
                          end="2024-01-01").reset_index()#дата как новый индекс
     prices["Date"] = pd.to_datetime(prices["Date"]).dt.strftime('%Y-%m-%d')
-    #if isinstance(prices.columns, pd.MultiIndex):
-    #    prices.columns = prices.columns.get_level_values(0)
+    if isinstance(prices.columns, pd.MultiIndex):
+        prices.columns = prices.columns.get_level_values(0)
     # pct_chande = percent change, shift поднимает на строку вверх
     prices["target_return"] = prices['Close'].pct_change().shift(-1)
     prices['target_direction'] = (prices['target_return'] > 0).astype(
