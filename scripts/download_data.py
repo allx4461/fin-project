@@ -29,7 +29,7 @@ def load_merge_all_sentiments() -> pd.DataFrame:
                  'prob_neg': 'roberta_neg',
                  'news_count': 'roberta_count'
                  # оставляем только эти колонки тк колво новостей одинаково и уже есть у финберта
-                 })[['trading_day', 'roberta_score', 'vader_pos', 'vader_neg']]
+                 })[['trading_day', 'roberta_score', 'roberta_pos', 'roberta_neg']]
     df_vader = pd.read_csv("data/sentiment/nvda_vader_daily.csv").rename(
         columns={'sentiment_score': 'vader_score',
                  'prob_pos': 'vader_pos',
