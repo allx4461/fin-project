@@ -52,3 +52,4 @@ def clean_news_data(news: pd.DataFrame) -> pd.DataFrame:
     df = df.drop_duplicates(subset=['trading_day', 'Article_title']).reset_index(drop=True)
 
     return df
+
