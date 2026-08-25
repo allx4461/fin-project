@@ -35,8 +35,9 @@ def train_catboosts(df: pd.DataFrame):
         y_val_pred = model.predict(x_val)
         y_test_pred = model.predict(x_test)
         importances = model.get_feature_importance()
+        feature_imp = pd.Series(importances, index=all_required).sort_values(ascending=False)
         print(f'\n\n\n\n done! catboost fitted on {all_required} features \n\n and predicted {y_test_pred}, {y_val_pred} \n\n found these importances {importances}\n\n')
-        print(f'\n\npredictions evaluated as \n\n{evaluate_predictions(y_val,y_val_pred)}\n\n\n\n')
+        print('top importances',feature_imp)
 if __name__=='__main__':
     df=pd.read_csv(PROJECT_ROOT / "data" / "processed" / "nvda_features.csv")
     train_catboosts(df)
