@@ -25,11 +25,11 @@ def train_catboosts(df: pd.DataFrame):
         all_required=[]
         for feature_list in feature_list_tuple: all_required.extend(feature_list)
         x_train=train_df[all_required]
-        y_train=train_df[['target_return']]
+        y_train=train_df['target_return']
         x_val=val_df[all_required]
-        y_val=val_df[['target_return']]
+        y_val=val_df['target_return']
         x_test=test_df[all_required]
-        y_test=test_df[['target_return']]
+        y_test=test_df['target_return']
         model.fit(x_train, y_train, eval_set=(x_val, y_val),
                         verbose=10)  # fit это тренировка
         y_val_pred = model.predict(x_val)
