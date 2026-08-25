@@ -20,6 +20,7 @@ def main():
     print(f"   got {len(df_nvda)} NVDA-related rows")
 
     print("3 - get rid of duplicates and Nans, corrected time")
+    
     df_cleaned = clean_news_data(df_nvda)
     print(f"   got {len(df_cleaned)} NVDA-related clear rows")
 
