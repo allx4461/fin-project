@@ -1,5 +1,3 @@
-from src.features import PRICE_FEATURES, FINBERT_FEATURES, ROBERTA_FEATURES, VADER_FEATURES, CALENDAR_FEATURES
-from src.models import time_split, evaluate_predictions
 import pandas as pd
 from pathlib import Path
 import sys
@@ -7,7 +5,8 @@ from catboost import CatBoostRegressor
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(PROJECT_ROOT))
-
+from src.features import PRICE_FEATURES, FINBERT_FEATURES, ROBERTA_FEATURES, VADER_FEATURES, CALENDAR_FEATURES
+from src.models import time_split, evaluate_predictions
 
 FEATURE_SETS = {
     'price_only': PRICE_FEATURES + CALENDAR_FEATURES,
