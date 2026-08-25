@@ -1,8 +1,12 @@
 import pandas as pd
-from src.models import time_split,evaluate_predictions
+from pathlib import Path
+import sys
 import numpy as np
 from catboost import CatBoostRegressor
-from pathlib import Path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.append(str(PROJECT_ROOT))
+from src.models import time_split,evaluate_predictions
+
 from src.features import PRICE_FEATURES, FINBERT_FEATURES, ROBERTA_FEATURES, VADER_FEATURES, CALENDAR_FEATURES
 
 def train_catboosts(df: pd.DataFrame):
@@ -34,6 +38,5 @@ def train_catboosts(df: pd.DataFrame):
         print(f'\n\n\n\n done! catboost fitted on {all_required} features \n\n and predicted {y_test_pred}, {y_val_pred} \n\n found these importances {importances}\n\n')
         print(f'\n\npredictions evaluated as \n\n{evaluate_predictions(y_val,y_val_pred)}\n\n\n\n')
 if __name__=='__main__':
-    PROJECT_ROOT = Path(__file__).resolve().parent.parent
     df=pd.read_csv(PROJECT_ROOT / "data" / "processed" / "nvda_features.csv")
     train_catboosts(df)
