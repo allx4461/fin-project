@@ -20,7 +20,7 @@ def train_catboosts(df: pd.DataFrame):
             l2_leaf_reg=5.0,
             random_seed=42,          # фиксация случайности для воспроизводимости
             # выводить лог каждые 100 деревьев (или False для тишины)
-            verbose=100
+            verbose=False
         )  # бтв более подробное пояснение за параметры накарякала в вольте
         all_required=[]
         for feature_list in feature_list_tuple: all_required.extend(feature_list)
@@ -31,7 +31,7 @@ def train_catboosts(df: pd.DataFrame):
         x_test=test_df[all_required]
         y_test=test_df['target_return']
         model.fit(x_train, y_train, eval_set=(x_val, y_val),
-                        verbose=10)  # fit это тренировка
+                        verbose=False)  # fit это тренировка
         y_val_pred = model.predict(x_val)
         y_test_pred = model.predict(x_test)
         importances = model.get_feature_importance()
