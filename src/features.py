@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 
 PRICE_FEATURES = ['return_1d', 'return_5d', 'return_20d',
-                  'price_to_sma_20', 'volatility_5d', 'volume_ratio_10d', 'hl_spread','has_news']
+                  'price_to_sma_20', 'volatility_5d', 'volume_ratio_10d', 'hl_spread']
 VADER_FEATURES = ['vader_score', 'vader_pos', 'vader_neg', 'vader_score_3d']
 ROBERTA_FEATURES = ['roberta_score', 'roberta_pos',
                     'roberta_neg', 'roberta_score_3d']
