@@ -48,8 +48,7 @@ def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
         by='val_dir_acc', ascending=False).reset_index(drop=True)
     return res_df
 
-
-if __name__ == '__main__':
+def start():
     data_path = PROJECT_ROOT / "data" / "processed" / "nvda_features.csv"
     output_path = PROJECT_ROOT / "results" / "metrics_linear.csv"
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -58,7 +57,9 @@ if __name__ == '__main__':
     metrics_df = run_grid_search(df)
 
     metrics_df.to_csv(output_path, index=False)
-    print("\n```````````````best 10```````````````\n ")
+    print("\n```````````````best 10 linear```````````````\n ")
     print(metrics_df.head(10).to_string())
-    print(f"\n results in {output_path}")
+    #print(f"\n results in {output_path}")
 
+if __name__ == '__main__':
+    start()
