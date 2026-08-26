@@ -27,7 +27,7 @@ def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
 
     total_runs = len(FEATURE_SETS) * len(depths) * \
         len(learning_rates) * len(l2_regs)
-    print(f"running {total_runs} experiments")
+    #print(f"running {total_runs} experiments")
 
     run_idx = 0
     for feat_name, features in FEATURE_SETS.items():
@@ -70,7 +70,7 @@ def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
                         'test_mae': round(test_metrics['mae'], 4),
                     })
 
-                    print(f"ran {run_idx}/{total_runs} ")
+                    #print(f"ran {run_idx}/{total_runs} ")
 
     res_df = pd.DataFrame(results)
     res_df = res_df.sort_values(
