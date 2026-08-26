@@ -12,13 +12,13 @@ def get_graph(output_path):
     data_path = PROJECT_ROOT / "data" / "processed" / "nvda_features.csv"
     df = pd.read_csv(data_path)
     val_pred_linear,test_pred_linear=train_linear.train_model(df,FEATURE_SETS['price_roberta'])
-    pred_linear=pd.concat(val_pred_linear,test_pred_linear,ignore_index=True)
+    pred_linear=pd.concat([val_pred_linear,test_pred_linear],ignore_index=True)
 
     val_pred_forest,test_pred_forest=train_forest.train_model(df,FEATURE_SETS['all_features'])
-    pred_forest=pd.concat(val_pred_forest,test_pred_forest,ignore_index=True)
+    pred_forest=pd.concat([val_pred_forest,test_pred_forest],ignore_index=True)
 
     val_pred_catboost,test_pred_catboost=train_catboost.train_model(df,0.05,8,1.0,FEATURE_SETS['all_features'])
-    pred_catboost=pd.concat(val_pred_catboost,test_pred_catboost,ignore_index=True)
+    pred_catboost=pd.concat([val_pred_catboost,test_pred_catboost],ignore_index=True)
 
     all_preds = pd.concat([pred_linear, pred_forest, pred_catboost], ignore_index=True)
     all_preds['date'] = pd.to_datetime(all_preds['date'])
