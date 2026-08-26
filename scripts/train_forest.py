@@ -17,23 +17,33 @@ FEATURE_SETS = {
     'price_vader': PRICE_FEATURES + CALENDAR_FEATURES + VADER_FEATURES + ['has_news'],
     'all_features': PRICE_FEATURES + CALENDAR_FEATURES + FINBERT_FEATURES + ROBERTA_FEATURES + VADER_FEATURES + ['has_news']
 }
+def train_model(df: pd.DataFrame,features):
+    train_df, val_df, test_df = time_split(df)
+    x_train = train_df[features] 
+    x_val = val_df[features]
+    x_test = test_df[features]
+    y_train = train_df['target_return']
+
+    model = RandomForestRegressor()
+    model.fit(x_train,y_train)
+    val_pred = model.predict(x_val)
+    test_pred = model.predict(x_test)
+    return val_pred,test_pred
+
+def validate(df,val_pred,test_pred):
+    train_df, val_df, test_df = time_split(df)
+    y_val=val_df['target_return']
+    y_test=test_df['target_return']
+    val_metrics = evaluate_predictions(y_val, val_pred)
+    test_metrics = evaluate_predictions(y_test, test_pred)
+    return val_metrics,test_metrics
+
 
 def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
-    train_df, val_df, test_df = time_split(df)
     results = []
-    for feat_name, features in FEATURE_SETS.items():
-        X_train, y_train = train_df[features], train_df['target_return']
-        X_val, y_val = val_df[features], val_df['target_return']
-        X_test, y_test = test_df[features], test_df['target_return']    
-        model = RandomForestRegressor()
-        model.fit(X_train, y_train)
-
-        val_pred = model.predict(X_val)
-        test_pred = model.predict(X_test)
-
-        val_metrics = evaluate_predictions(y_val, val_pred)
-        test_metrics = evaluate_predictions(y_test, test_pred)
-
+    for feat_name, features in FEATURE_SETS.items():       
+        val_pred,test_pred=train_model(df,features)
+        val_metrics,test_metrics=validate(df,val_pred,test_pred)                   
         results.append({
             'feature_set': feat_name,
             'val_dir_acc': round(val_metrics['dir_acc'], 4),
@@ -43,7 +53,6 @@ def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
             'test_r2': round(test_metrics['r2'], 4),
             'test_mae': round(test_metrics['mae'], 4),
         })
-
     res_df = pd.DataFrame(results)
     res_df = res_df.sort_values(
         by='val_dir_acc', ascending=False).reset_index(drop=True)
@@ -55,7 +64,7 @@ def start():
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(data_path)
-    metrics_df = run_grid_search(df)
+    metrics_df = run_grid_search(df)[0]
 
     metrics_df.to_csv(output_path, index=False)
     print("\n```````````````best 10 forest```````````````\n ")
