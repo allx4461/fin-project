@@ -32,7 +32,7 @@ def validate(df, val_pred, test_pred):
     y_test = test_df['target_return']
     val_metrics = evaluate_predictions(y_val, val_pred)
     test_metrics = evaluate_predictions(y_test, test_pred)
-    strategy_metrics=backtest(y_val,val_pred,df['Date'])
+    strategy_metrics=backtest(y_val,val_pred,val_df['Date'])
     return val_metrics, test_metrics, strategy_metrics
     
     
