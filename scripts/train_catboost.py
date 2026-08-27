@@ -29,6 +29,7 @@ def train_model(df: pd.DataFrame,lrt,dth,l2,features):
         depth=dth,
         l2_leaf_reg=l2,
         random_seed=42,
+        use_best_model=False,
         verbose=False
     )
     model.fit(x_train, y_train, eval_set=(
