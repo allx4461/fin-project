@@ -30,10 +30,10 @@ def get_graph(output_path):
     pred_linear = build_model_df(val_pred_linear, test_pred_linear, 'linear')
 
     val_pred_forest,test_pred_forest=train_forest.train_model(df,FEATURE_SETS['all_features'])
-    pred_forest=build_model_df(val_pred_forest,test_pred_forest)
+    pred_forest=build_model_df(val_pred_forest,test_pred_forest,'forest')
 
     val_pred_catboost,test_pred_catboost=train_catboost.train_model(df,0.05,8,1.0,FEATURE_SETS['all_features'])
-    pred_catboost=build_model_df(val_pred_catboost,test_pred_catboost)
+    pred_catboost=build_model_df(val_pred_catboost,test_pred_catboost,'catboost')
 
     all_preds = pd.concat([pred_linear, pred_forest, pred_catboost],ignore_index=True)
     all_preds['date'] = pd.to_datetime(all_preds['date'])
