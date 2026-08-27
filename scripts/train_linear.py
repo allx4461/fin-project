@@ -10,7 +10,7 @@ sys.path.append(str(PROJECT_ROOT))
 from src.config import TICKER, DATA_PROCESSED_FEATURES, RESULTS_DIR
 from src.features import FEATURE_SETS
 from src.models import time_split, evaluate_predictions
-
+from src.strategy import backtest
 
 
 
@@ -34,14 +34,15 @@ def validate(df, val_pred, test_pred):
     y_test = test_df['target_return']
     val_metrics = evaluate_predictions(y_val, val_pred)
     test_metrics = evaluate_predictions(y_test, test_pred)
-    return val_metrics, test_metrics
-
+    strategy_metrics=backtest(y_val,val_pred)
+    return val_metrics, test_metrics, strategy_metrics
+        
 
 def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
     results = []
     for feat_name, features in FEATURE_SETS.items():       
         val_pred, test_pred = train_model(df, features)
-        val_metrics, test_metrics = validate(df, val_pred, test_pred)                   
+        val_metrics, test_metrics, strategy_metrics = validate(df, val_pred, test_pred)                   
         results.append({
             'feature_set': feat_name,
             'val_dir_acc': round(val_metrics['dir_acc'], 4),
@@ -51,6 +52,7 @@ def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
             'test_r2': round(test_metrics['r2'], 4),
             'test_mae': round(test_metrics['mae'], 4),
         })
+        results.extend(strategy_metrics)
     res_df = pd.DataFrame(results)
     res_df = res_df.sort_values(by='val_dir_acc', ascending=False).reset_index(drop=True)
     return res_df
