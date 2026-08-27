@@ -8,16 +8,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(PROJECT_ROOT))
 
 from src.config import TICKER, DATA_PROCESSED_FEATURES, RESULTS_DIR
-from src.features import PRICE_FEATURES, FINBERT_FEATURES, ROBERTA_FEATURES, VADER_FEATURES, CALENDAR_FEATURES
+from src.features import FEATURE_SETS
 from src.models import time_split, evaluate_predictions
 
-FEATURE_SETS = {
-    'price_only': PRICE_FEATURES + CALENDAR_FEATURES,
-    'price_finbert': PRICE_FEATURES + CALENDAR_FEATURES + FINBERT_FEATURES + ['has_news'],
-    'price_roberta': PRICE_FEATURES + CALENDAR_FEATURES + ROBERTA_FEATURES + ['has_news'],
-    'price_vader': PRICE_FEATURES + CALENDAR_FEATURES + VADER_FEATURES + ['has_news'],
-    'all_features': PRICE_FEATURES + CALENDAR_FEATURES + FINBERT_FEATURES + ROBERTA_FEATURES + VADER_FEATURES + ['has_news']
-}
+
 
 
 def train_model(df: pd.DataFrame, features):

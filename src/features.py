@@ -1,6 +1,7 @@
 import pandas as pd
 from pathlib import Path
 from src.config import DATA_PROCESSED_DATASET, DATA_PROCESSED_FEATURES
+import numpy as np
 
 PRICE_FEATURES = ['return_1d', 'return_5d', 'return_20d',
                   'price_to_sma_20', 'volatility_5d', 'volume_ratio_10d', 'hl_spread']
@@ -10,7 +11,13 @@ ROBERTA_FEATURES = ['roberta_score', 'roberta_pos',
 FINBERT_FEATURES = ['finbert_score', 'finbert_pos', 'finbert_neg', 'finbert_score_3d',
                     'finbert_score_7d', 'finbert_diff_1d', 'news_count_ratio_7d', 'finbert_x_volume']
 CALENDAR_FEATURES = ['day_of_week', 'month']
-
+FEATURE_SETS = {
+    'price_only': PRICE_FEATURES + CALENDAR_FEATURES,
+    'price_finbert': PRICE_FEATURES + CALENDAR_FEATURES + FINBERT_FEATURES + ['has_news'],
+    'price_roberta': PRICE_FEATURES + CALENDAR_FEATURES + ROBERTA_FEATURES + ['has_news'],
+    'price_vader': PRICE_FEATURES + CALENDAR_FEATURES + VADER_FEATURES + ['has_news'],
+    'all_features': PRICE_FEATURES + CALENDAR_FEATURES + FINBERT_FEATURES + ROBERTA_FEATURES + VADER_FEATURES + ['has_news']
+}
 
 def returns(df: pd.DataFrame):
     # считаем процентное изменение за разные сроки
@@ -46,14 +53,14 @@ def rolling_sentiment(df: pd.DataFrame):
 
 def sentiment_delta(df: pd.DataFrame):
     # изменение настроений за день
-    df['finbert_diff_1d'] = df['finbert_score'] - df['finbert_score'].shift(1)
-
+    raw_diff = df['finbert_score'] - df['finbert_score'].shift(1)
+    df['finbert_diff_1d'] = raw_diff.where(df['has_news'] == 1, 0.0)    
 
 def media_attention(df: pd.DataFrame):
     # количество новостей относительно среднего за последнее окно
     df['news_count_ratio_7d'] = df['news_count'] / \
         df['news_count'].rolling(window=7).mean()
-    df['news_count_ratio_7d']=df['news_count_ratio_7d'].fillna(0)
+    df['news_count_ratio_7d']= df['news_count_ratio_7d'].replace([np.inf, -np.inf], 0.0).fillna(0.0)
 
 
 def cal_anomalies(df: pd.DataFrame):
@@ -81,12 +88,12 @@ def create_features(df: pd.DataFrame) -> pd.DataFrame:
     volatility(df)
     volume_spike(df)
     rolling_sentiment(df)
+    flag_has_news(df)
     sentiment_delta(df)
     media_attention(df)
     cal_anomalies(df)
     hl_spread(df)
     finbert_x_volume(df)
-    flag_has_news(df)
     df = df.dropna().reset_index(drop=True)
     return df
 
