@@ -8,20 +8,34 @@ import sys
 from train_linear import FEATURE_SETS
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(PROJECT_ROOT))
+from src.models import time_split
 
 def get_graph(output_path):
     data_path = PROJECT_ROOT / "data" / "processed" / "nvda_features.csv"
     df = pd.read_csv(data_path)
+
+    train_df, val_df, test_df = time_split(df)
+    dates_val = pd.to_datetime(val_df['trading_day'].values)
+    dates_test = pd.to_datetime(test_df['trading_day'].values)
+    y_val_true = val_df['target_return'].values
+    y_test_true = test_df['target_return'].values
+
+
+    def build_model_df(val_pred, test_pred, model_name):  
+        val_df = pd.DataFrame({'date': dates_val, 'y_true': y_val_true, 'y_pred': val_pred, 'split': 'val', 'model': model_name})
+        test_df = pd.DataFrame({'date': dates_test, 'y_true': y_test_true, 'y_pred': test_pred, 'split': 'test', 'model': model_name})
+        return pd.concat([val_df, test_df], ignore_index=True)
+
     val_pred_linear,test_pred_linear=train_linear.train_model(df,FEATURE_SETS['price_roberta'])
-    pred_linear=np.concatenate([val_pred_linear,test_pred_linear])
+    pred_linear = build_model_df(val_pred_linear, test_pred_linear, 'linear')
 
     val_pred_forest,test_pred_forest=train_forest.train_model(df,FEATURE_SETS['all_features'])
-    pred_forest=np.concatenate([val_pred_forest,test_pred_forest])
+    pred_forest=build_model_df(val_pred_forest,test_pred_forest)
 
     val_pred_catboost,test_pred_catboost=train_catboost.train_model(df,0.05,8,1.0,FEATURE_SETS['all_features'])
-    pred_catboost=np.concatenate([val_pred_catboost,test_pred_catboost])
+    pred_catboost=build_model_df(val_pred_catboost,test_pred_catboost)
 
-    all_preds = np.concatenate([pred_linear, pred_forest, pred_catboost])
+    all_preds = pd.concat([pred_linear, pred_forest, pred_catboost],ignore_index=True)
     all_preds['date'] = pd.to_datetime(all_preds['date'])
     all_preds = all_preds.sort_values('date')
 
