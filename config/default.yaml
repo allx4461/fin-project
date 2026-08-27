@@ -1,0 +1,37 @@
+# ==============================================================================
+# Configuration for Financial Sentiment & Price Movement Prediction Project
+# ==============================================================================
+
+# Target Stock Ticker (e.g. NVDA, AAPL, TSLA, MSFT)
+ticker: "NVDA"
+
+# Date Range for historical price & news evaluation
+start_date: "2015-01-01"
+end_date: "2024-01-01"
+
+# Raw news dataset path (relative to project root)
+raw_news_path: "data/raw/nasdaq_external_data.csv"
+
+# Dataset split ratios (chronological time split)
+splits:
+  train: 0.70
+  val: 0.15
+  test: 0.15
+
+# General settings
+random_seed: 42
+
+# Sentiment inference settings
+sentiment:
+  batch_size: 32
+  models:
+    - "vader"
+    - "finbert"
+    - "roberta"
+
+# Feature engineering parameters
+features:
+  sma_window: 20
+  volatility_window: 5
+  volume_window: 10
+  sentiment_windows: [3, 7]
