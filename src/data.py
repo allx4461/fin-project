@@ -3,9 +3,15 @@ import pandas as pd
 import numpy as np
 import pandas_market_calendars as mcal
 from tqdm import tqdm
+from src.config import TICKER, START_DATE, END_DATE, DATA_RAW_NEWS, DATA_PROCESSED_NEWS
 
 
-def filter_ticker_streaming(data_path: Path, output_path: Path, ticker: str = "NVDA", chunksize: int = 50_000) -> None:
+def filter_ticker_streaming(
+    data_path: Path = DATA_RAW_NEWS,
+    output_path: Path = DATA_PROCESSED_NEWS,
+    ticker: str = TICKER,
+    chunksize: int = 50_000,
+) -> None:
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.exists():
@@ -21,7 +27,7 @@ def filter_ticker_streaming(data_path: Path, output_path: Path, ticker: str = "N
         del chunk, ticker_chunk
 
 
-def get_nasdaq_trading_days(start: pd.Timestamp, end: pd.Timestamp) -> pd.DatetimeIndex:
+def get_nasdaq_trading_days(start: pd.Timestamp = START_DATE, end: pd.Timestamp = END_DATE) -> pd.DatetimeIndex:
     nasdaq = mcal.get_calendar('NASDAQ')
     schedule = nasdaq.schedule(start_date=start, end_date=end)
     return schedule.index.normalize()
@@ -52,4 +58,3 @@ def clean_news_data(news: pd.DataFrame) -> pd.DataFrame:
     df = df.drop_duplicates(subset=['trading_day', 'Article_title']).reset_index(drop=True)
 
     return df
-

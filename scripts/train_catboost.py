@@ -1,12 +1,14 @@
-from src.models import time_split, evaluate_predictions
-from src.features import PRICE_FEATURES, FINBERT_FEATURES, ROBERTA_FEATURES, VADER_FEATURES, CALENDAR_FEATURES
-import pandas as pd
 from pathlib import Path
 import sys
+import pandas as pd
 from catboost import CatBoostRegressor
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(PROJECT_ROOT))
+
+from src.config import TICKER, DATA_PROCESSED_FEATURES, RESULTS_DIR, RANDOM_SEED
+from src.features import PRICE_FEATURES, FINBERT_FEATURES, ROBERTA_FEATURES, VADER_FEATURES, CALENDAR_FEATURES
+from src.models import time_split, evaluate_predictions
 
 FEATURE_SETS = {
     'price_only': PRICE_FEATURES + CALENDAR_FEATURES,
@@ -16,40 +18,41 @@ FEATURE_SETS = {
     'all_features': PRICE_FEATURES + CALENDAR_FEATURES + FINBERT_FEATURES + ROBERTA_FEATURES + VADER_FEATURES + ['has_news']
 }
 
-def train_model(df: pd.DataFrame,lrt,dth,l2,features):
+
+def train_model(df: pd.DataFrame, lrt, dth, l2, features):
     train_df, val_df, test_df = time_split(df)
     x_train = train_df[features] 
     x_val = val_df[features]
     x_test = test_df[features]
     y_train = train_df['target_return']
-    y_val=val_df['target_return']
+    y_val = val_df['target_return']
+
     model = CatBoostRegressor(
         iterations=500,
         learning_rate=lrt,
         depth=dth,
         l2_leaf_reg=l2,
-        random_seed=42,
+        random_seed=RANDOM_SEED,
         use_best_model=False,
         verbose=False
     )
-    model.fit(x_train, y_train, eval_set=(
-        x_val, y_val), verbose=False)
-
+    model.fit(x_train, y_train, eval_set=(x_val, y_val), verbose=False)
     
     val_pred = model.predict(x_val)
     test_pred = model.predict(x_test)
-    return val_pred,test_pred
+    return val_pred, test_pred
 
-def validate(df,val_pred,test_pred):
+
+def validate(df, val_pred, test_pred):
     train_df, val_df, test_df = time_split(df)
-    y_val=val_df['target_return']
-    y_test=test_df['target_return']
+    y_val = val_df['target_return']
+    y_test = test_df['target_return']
     val_metrics = evaluate_predictions(y_val, val_pred)
     test_metrics = evaluate_predictions(y_test, test_pred)
-    return val_metrics,test_metrics
+    return val_metrics, test_metrics
+
 
 def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
-    train_df, val_df, test_df = time_split(df)
     results = []
     depths = [2, 3, 4, 6, 8]
     learning_rates = [0.01, 0.03, 0.05]
@@ -58,10 +61,8 @@ def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
         for dth in depths:
             for lrt in learning_rates:
                 for l2 in l2_regs:
-                    val_pred, test_pred = train_model(df,
-                        lrt, dth, l2, features)
-                    val_metrics, test_metrics = validate(
-                        df,val_pred,test_pred)
+                    val_pred, test_pred = train_model(df, lrt, dth, l2, features)
+                    val_metrics, test_metrics = validate(df, val_pred, test_pred)
                     results.append({
                         'feature_set': feat_name,
                         'depth': dth,
@@ -76,21 +77,22 @@ def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
                     })
 
     res_df = pd.DataFrame(results)
-    res_df = res_df.sort_values(
-        by='val_dir_acc', ascending=False).reset_index(drop=True)
+    res_df = res_df.sort_values(by='val_dir_acc', ascending=False).reset_index(drop=True)
     return res_df
 
+
 def start():
-    data_path = PROJECT_ROOT / "data" / "processed" / "nvda_features.csv"
-    output_path = PROJECT_ROOT / "results" / "metrics_catboost.csv"
+    data_path = DATA_PROCESSED_FEATURES
+    output_path = RESULTS_DIR / "metrics_catboost.csv"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(data_path)
     metrics_df = run_grid_search(df)
 
     metrics_df.to_csv(output_path, index=False)
-    print("\n```````````````best 10 catboost```````````````\n ")
+    print(f"\n```````````````best 10 catboost ({TICKER})```````````````\n ")
     print(metrics_df.head(10).to_string())
+    print(f"\nResults saved to {output_path}")
 
 
 if __name__ == '__main__':

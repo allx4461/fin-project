@@ -1,7 +1,8 @@
 import pandas as pd
-from sklearn.metrics import r2_score,mean_absolute_error
+from sklearn.metrics import r2_score, mean_absolute_error
 import numpy as np
-def time_split(df:pd.DataFrame,train:float=0.7,validation:float=0.15):
+from src.config import TRAIN_SPLIT, VAL_SPLIT
+def time_split(df:pd.DataFrame,train:float=TRAIN_SPLIT,validation:float=VAL_SPLIT):
     n=len(df)
     train_end=int(n*train)
     validation_end=int(n*(train+validation))

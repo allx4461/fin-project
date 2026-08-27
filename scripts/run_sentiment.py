@@ -6,15 +6,12 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(PROJECT_ROOT))
 
+from src.config import TICKER, DATA_PROCESSED_NEWS, DATA_SENTIMENT_DIR, get_sentiment_file
 from src.sentiment import predict_finbert, predict_roberta, predict_vader
 
-DATA_PROCESSED_PATH = PROJECT_ROOT / "data" / "processed" / "nvda_news.csv"
-OUTPUT_DIR = PROJECT_ROOT / "data" / "sentiment"
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-
-def run_sentiment(data_path: Path, output_path: Path, model: Literal['finbert', 'roberta', 'vader']):
-    print(f"\n--- Running sentiment analysis: {model} ---")
+def run_sentiment(data_path: Path, output_dir: Path, model: Literal['finbert', 'roberta', 'vader']):
+    print(f"\n--- Running sentiment analysis: {model} for {TICKER} ---")
     df = pd.read_csv(data_path, usecols=['trading_day', 'Article_title'])
     
     if model == 'finbert':
@@ -39,25 +36,22 @@ def run_sentiment(data_path: Path, output_path: Path, model: Literal['finbert', 
         prob_neu=('prob_neu', 'mean')
     ).reset_index()
 
-    out_file = output_path / f"nvda_{model}_daily.csv"
+    out_file = get_sentiment_file(model)
     daily_sentiment.to_csv(out_file, index=False)
-    print(f"saved {model}'s {len(daily_sentiment)} trading days to {out_file}")
+    print(f"Saved {model}'s {len(daily_sentiment)} trading days to {out_file}")
 
 
-def check_sentiment(path: Path):
+def check_sentiment(ticker: str = TICKER):
     for model_name in ['finbert', 'roberta', 'vader']:
-        file_path = path / f"nvda_{model_name}_daily.csv"
+        file_path = get_sentiment_file(model_name, ticker=ticker)
         if file_path.exists():
-            print(f"\n\t{model_name}'s results \t")
+            print(f"\n\t{model_name}'s results for {ticker}\t")
             df = pd.read_csv(file_path)
             print(df.head(5))
 
 
 if __name__ == '__main__':
-    run_sentiment(DATA_PROCESSED_PATH, OUTPUT_DIR, 'vader')
-
-    run_sentiment(DATA_PROCESSED_PATH, OUTPUT_DIR, 'finbert')
-
-    run_sentiment(DATA_PROCESSED_PATH, OUTPUT_DIR, 'roberta')
-
-    check_sentiment(OUTPUT_DIR)
+    run_sentiment(DATA_PROCESSED_NEWS, DATA_SENTIMENT_DIR, 'vader')
+    run_sentiment(DATA_PROCESSED_NEWS, DATA_SENTIMENT_DIR, 'finbert')
+    run_sentiment(DATA_PROCESSED_NEWS, DATA_SENTIMENT_DIR, 'roberta')
+    check_sentiment(TICKER)

@@ -1,5 +1,6 @@
 import pandas as pd
 from pathlib import Path
+from src.config import DATA_PROCESSED_DATASET, DATA_PROCESSED_FEATURES
 
 PRICE_FEATURES = ['return_1d', 'return_5d', 'return_20d',
                   'price_to_sma_20', 'volatility_5d', 'volume_ratio_10d', 'hl_spread']
@@ -91,9 +92,8 @@ def create_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    PROJECT_ROOT = Path(__file__).resolve().parent.parent
-    input_path = PROJECT_ROOT / "data" / "processed" / "dataset.csv"
-    output_path = PROJECT_ROOT / "data" / "processed" / "nvda_features.csv"
+    input_path = DATA_PROCESSED_DATASET
+    output_path = DATA_PROCESSED_FEATURES
     df = pd.read_csv(input_path)
     df_featured = create_features(df)
     df_featured.to_csv(output_path, index=False)
