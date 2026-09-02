@@ -43,7 +43,7 @@ def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
     for feat_name, features in FEATURE_SETS.items():       
         val_pred, test_pred = train_model(df, features)
         val_metrics, test_metrics, strategy_metrics = validate(df, val_pred, test_pred)                   
-        results.append({
+        result = {
             'feature_set': feat_name,
             'val_dir_acc': round(val_metrics['dir_acc'], 4),
             'val_r2': round(val_metrics['r2'], 4),
@@ -51,8 +51,12 @@ def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
             'test_dir_acc': round(test_metrics['dir_acc'], 4),
             'test_r2': round(test_metrics['r2'], 4),
             'test_mae': round(test_metrics['mae'], 4),
-        })
-        results.extend(strategy_metrics)
+            'total_return': round(strategy_metrics['total_return'], 4),
+            'sharpe': round(strategy_metrics['sharpe'], 4),
+            'max_drawdown': round(strategy_metrics['max_drawdown'], 4),
+            'win_rate': round(strategy_metrics['win_rate'], 4),
+        }
+        results.append(result)
     res_df = pd.DataFrame(results)
     res_df = res_df.sort_values(by='val_dir_acc', ascending=False).reset_index(drop=True)
     return res_df
