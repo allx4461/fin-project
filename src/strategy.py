@@ -22,5 +22,5 @@ def backtest(y_true, y_pred, dates):
         'cumulative_strategy': cumulative_strategy,
         'cumulative_benchmark':cumulative_benchmark
     })
-    metrics={'total_return': cumulative_strategy[-1], 'sharpe': sharpe, 'max_drawdown': max_drawdown, 'win_rate': win_rate}
+    metrics={'total_return': cumulative_strategy.iloc(-1), 'sharpe': sharpe, 'max_drawdown': max_drawdown, 'win_rate': win_rate}
     return df,metrics
