@@ -43,7 +43,7 @@ def validate(df, val_pred, test_pred):
     y_test = test_df['target_return']
     val_metrics = evaluate_predictions(y_val, val_pred)
     test_metrics = evaluate_predictions(y_test, test_pred)
-    strategy_metrics=backtest(y_val,val_pred,val_df['Date'])
+    unused, strategy_metrics = backtest(y_val, val_pred, val_df['Date'])
     return val_metrics, test_metrics, strategy_metrics
 
 
@@ -69,8 +69,11 @@ def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
                         'test_dir_acc': round(test_metrics['dir_acc'], 4),
                         'test_r2': round(test_metrics['r2'], 4),
                         'test_mae': round(test_metrics['mae'], 4),
+                        'total_return': round(strategy_metrics['total_return'], 4),
+                        'sharpe': round(strategy_metrics['sharpe'], 4),
+                        'max_drawdown': round(strategy_metrics['max_drawdown'], 4),
+                        'win_rate': round(strategy_metrics['win_rate'], 4),
                     })
-                    results.extend(strategy_metrics)
 
     res_df = pd.DataFrame(results)
     res_df = res_df.sort_values(by='val_dir_acc', ascending=False).reset_index(drop=True)
