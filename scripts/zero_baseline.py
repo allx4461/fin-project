@@ -13,11 +13,8 @@ sys.path.append(str(PROJECT_ROOT))
 
 def train_model(df: pd.DataFrame):
     _, val_df, test_df = time_split(df)
-    x_test = test_df['Date']
-    x_val = val_df['Date']
-
-    val_pred = np.zeros(len(x_test))
-    test_pred = np.zeros(len(x_val))
+    val_pred = np.zeros(len(val_df))
+    test_pred = np.zeros(len(test_df))
     return val_pred, test_pred
 
 

@@ -13,11 +13,8 @@ sys.path.append(str(PROJECT_ROOT))
 
 def train_model(df: pd.DataFrame):
     train_df, val_df, test_df = time_split(df)
-    x_test = test_df['Date']
-    x_val = val_df['Date']
-
-    val_pred = np.full(len(x_test), np.mean(train_df['target_return']))
-    test_pred = np.full(len(x_val), np.mean(train_df['target_return']))
+    val_pred = np.full(len(val_df), np.mean(train_df['target_return']))
+    test_pred = np.full(len(test_df), np.mean(train_df['target_return']))
     return val_pred, test_pred
 
 
@@ -34,7 +31,6 @@ def validate(df, val_pred, test_pred):
 def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
     results = []
     val_pred, test_pred = train_model(df)
-
     val_metrics, test_metrics, strategy_metrics = validate(
         df, val_pred, test_pred)
     results.append({
