@@ -12,9 +12,9 @@ from src.models import time_split, evaluate_predictions
 from src.strategy import backtest
 
 
-def train_model(df: pd.DataFrame, features):
+def train_model(df: pd.DataFrame):
     _, _, test_df = time_split(df)
-    x_test = test_df[features]
+    x_test = test_df['Date']
 
     val_pred = np.zeros(len(x_test))
     test_pred = np.zeros(len(x_test))
