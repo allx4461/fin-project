@@ -33,9 +33,9 @@ def validate(df, val_pred, test_pred):
 
 def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
     results = []
-    
+    val_pred, test_pred = train_model(df)
     val_metrics, test_metrics, strategy_metrics = validate(
-        df, train_model(df)[0], train_model(df)[1])
+        df, val_pred, test_pred)
     results.append({
         'feature_set': 'no_feature',
         'val_dir_acc': round(val_metrics['dir_acc'], 4),
