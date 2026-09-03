@@ -33,6 +33,7 @@ def validate(df, val_pred, test_pred):
 
 def run_grid_search(df: pd.DataFrame) -> pd.DataFrame:
     results = []
+    
     val_metrics, test_metrics, strategy_metrics = validate(
         df, train_model(df)[0], train_model(df)[1])
     results.append({
